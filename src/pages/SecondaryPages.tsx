@@ -318,7 +318,6 @@ export const ReviewsPage: React.FC = () => {
         rating,
         comment: comment.trim(),
         userId: user.uid,
-        isDemo: false,
         published: false, // Held for admin moderation
       }).unwrap();
       setSubmitted(true);

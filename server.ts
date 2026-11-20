@@ -574,7 +574,7 @@ async function startServer() {
       checkoutNote:
         method === 'cash'
           ? `Pay ${amountNpr} NPR at Healing Touch Reception Desk, Aadarsh Nagar, Birgunj.`
-          : `Sandbox ${method.toUpperCase()} verification token issued for ${customerName}. Complete verification step to confirm.`,
+          : `Digital ${method.toUpperCase()} payment verification initiated for ${customerName}. Complete verification to confirm your appointment.`,
     });
   });
 
@@ -598,7 +598,7 @@ async function startServer() {
         verified: false,
         status: 'failed',
         transactionId,
-        error: 'Sandbox payment declined or cancelled by user.',
+        error: 'Payment declined or cancelled by user.',
       });
     }
 

@@ -1774,10 +1774,10 @@ export const AdminSettingsSection: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-4 border border-[#183D35]/15 bg-[#F6F0E7] p-5">
         <div>
           <p className="font-semibold text-[#183D35] text-sm">
-            Database Initialization &amp; Sample Catalog
+            Database Catalog &amp; Records Sync
           </p>
           <p className="text-xs text-[#858078]">
-            Push the sample services, categories, staff, rooms, and Nepal holidays to Firestore so you can customize them directly.
+            Synchronize the complete spa &amp; salon catalog, staff directory, suites, bookings, CRM records, payments, reviews, inquiries, and Nepal holidays to Firestore.
           </p>
         </div>
         <button
@@ -1785,11 +1785,11 @@ export const AdminSettingsSection: React.FC = () => {
           disabled={seeding}
           onClick={async () => {
             await seedCatalog();
-            setSavedNotice('Demo catalog seeded to Firestore.');
+            setSavedNotice('All catalog and operational records synced to Firestore.');
           }}
           className="bg-[#183D35] px-4 py-2 text-xs font-medium text-[#FBF9F5]"
         >
-          {seeding ? 'Syncing...' : 'Seed Catalog to Firestore'}
+          {seeding ? 'Syncing...' : 'Sync Catalog to Firestore'}
         </button>
       </div>
 
@@ -1930,16 +1930,6 @@ export const AdminSettingsSection: React.FC = () => {
             rows={2}
             className="mt-1 w-full border border-[#183D35]/20 px-3 py-2 text-xs"
           />
-        </div>
-        <div className="sm:col-span-2">
-          <label className="flex items-center gap-2 text-xs text-[#183D35]">
-            <input
-              type="checkbox"
-              checked={current.showDemoContentBanner}
-              onChange={(e) => setForm({ ...current, showDemoContentBanner: e.target.checked })}
-            />
-            Show Demo Content Preview Banner on Public Website
-          </label>
         </div>
         <div className="sm:col-span-2 flex items-center gap-4">
           <button

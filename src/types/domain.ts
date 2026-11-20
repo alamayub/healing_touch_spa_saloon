@@ -53,7 +53,6 @@ export interface SpaService {
   featured: boolean;
   published: boolean;
   verifiedByBusiness: boolean;
-  isDemo?: boolean;
 }
 
 export interface SalonService {
@@ -71,7 +70,6 @@ export interface SalonService {
   featured: boolean;
   published: boolean;
   verifiedByBusiness: boolean;
-  isDemo?: boolean;
 }
 
 export interface WellnessPackage {
@@ -91,7 +89,6 @@ export interface WellnessPackage {
   visualKey?: VisualKey;
   featured: boolean;
   published: boolean;
-  isDemo?: boolean;
 }
 
 export interface StaffMember {
@@ -111,7 +108,6 @@ export interface StaffMember {
   breakEnd?: string;
   availableForBooking: boolean;
   verified: boolean;
-  isDemo?: boolean;
   avatarUrl?: string;
 }
 
@@ -124,7 +120,6 @@ export interface SpaRoom {
   facilities: string[];
   status: 'available' | 'maintenance' | 'inactive';
   verified: boolean;
-  isDemo?: boolean;
   notes?: string;
 }
 
@@ -210,7 +205,6 @@ export interface GalleryItem {
   visualKey?: VisualKey;
   caption?: string;
   published: boolean;
-  isDemo?: boolean;
 }
 
 export interface SocialPost {
@@ -224,7 +218,6 @@ export interface SocialPost {
   visualKey?: VisualKey;
   publishedAt: string;
   published: boolean;
-  isDemo?: boolean;
 }
 
 export interface BlogPost {
@@ -238,7 +231,6 @@ export interface BlogPost {
   readMinutes: number;
   publishedAt: string;
   published: boolean;
-  isDemo?: boolean;
 }
 
 export interface Offer {
@@ -251,7 +243,6 @@ export interface Offer {
   validUntil?: string;
   applicableTo: 'spa' | 'salon' | 'packages' | 'all';
   active: boolean;
-  isDemo?: boolean;
 }
 
 export interface Review {
@@ -261,7 +252,6 @@ export interface Review {
   rating: number;
   comment: string;
   userId?: string;
-  isDemo?: boolean;
   published: boolean;
   createdAt: string;
 }
@@ -293,7 +283,6 @@ export interface BusinessSettings {
   agePolicyText: string;
   hygieneStandardsText: string;
   cancellationPolicyText: string;
-  showDemoContentBanner: boolean;
   updatedAt?: string;
 }
 

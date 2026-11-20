@@ -46,7 +46,7 @@ export const GalleryPage: React.FC = () => {
             Spa Interiors &amp; Salon Transformations
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[#252525]/82 sm:text-base">
-            Curated visuals managed through our Admin Gallery. Replace sample architectural plates anytime with verified photography uploaded by the business.
+            Explore our private treatment suites, hydrotherapy rooms, unisex salon floor, and curated hair &amp; bridal styling work in Aadarsh Nagar, Birgunj.
           </p>
         </div>
       </section>

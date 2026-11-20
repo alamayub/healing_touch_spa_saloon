@@ -411,7 +411,7 @@ export const BookingPage: React.FC = () => {
   const [bookingNonce, setBookingNonce] = useState(0);
   const pendingBookingRef = useMemo(() => generateBookingRef(), [bookingNonce]);
 
-  const handleStartSandboxPayment = async () => {
+  const handleStartDigitalPayment = async () => {
     if (paymentMethod === 'cash') return;
     setPaymentError(null);
     const values = getValues();
@@ -428,11 +428,11 @@ export const BookingPage: React.FC = () => {
         checkoutNote: res.checkoutNote,
       });
     } catch {
-      setPaymentError('Unable to reach payment verification server. You may choose Pay at Desk.');
+      setPaymentError('Unable to reach payment verification server. You may choose Cash at Desk.');
     }
   };
 
-  const handleVerifySandboxPayment = async (simulateFailure = false) => {
+  const handleVerifyDigitalPayment = async () => {
     if (!gatewaySession || paymentMethod === 'cash') return;
     setPaymentError(null);
     try {
@@ -441,7 +441,6 @@ export const BookingPage: React.FC = () => {
         bookingRef: pendingBookingRef,
         method: paymentMethod,
         gatewayToken: gatewaySession.gatewayToken,
-        simulateFailure,
       }).unwrap();
       if (res.verified) {
         setPaymentStatus('paid');
@@ -451,7 +450,7 @@ export const BookingPage: React.FC = () => {
       }
     } catch {
       setPaymentStatus('failed');
-      setPaymentError('Sandbox gateway verification failed. Online payment was not marked paid.');
+      setPaymentError('Gateway verification failed. Online payment was not marked paid.');
     }
   };
 
@@ -1471,7 +1470,7 @@ export const BookingPage: React.FC = () => {
                     7. Review Appointment &amp; Payment
                   </h2>
                   <p className="mt-1 text-sm text-[#858078]">
-                    Choose Cash at Reception or test Nepal digital payment verification (eSewa / Khalti / Fonepay sandbox).
+                    Choose Cash at Reception or complete Nepal digital payment verification (eSewa / Khalti / Fonepay).
                   </p>
                 </div>
 
@@ -1506,9 +1505,9 @@ export const BookingPage: React.FC = () => {
                   {(
                     [
                       { id: 'cash', label: 'Cash at Desk' },
-                      { id: 'esewa', label: 'eSewa (Sandbox)' },
-                      { id: 'khalti', label: 'Khalti (Sandbox)' },
-                      { id: 'fonepay', label: 'Fonepay (Sandbox)' },
+                      { id: 'esewa', label: 'eSewa Digital' },
+                      { id: 'khalti', label: 'Khalti Digital' },
+                      { id: 'fonepay', label: 'Fonepay QR' },
                     ] as const
                   ).map((m) => (
                     <button
@@ -1535,17 +1534,17 @@ export const BookingPage: React.FC = () => {
                   <div className="border border-[#183D35]/15 bg-[#F6F0E7] p-5 space-y-4">
                     <div className="flex items-center gap-2 text-xs font-semibold text-[#183D35]">
                       <CreditCard className="h-4 w-4" />
-                      <span>Server-Verified {paymentMethod.toUpperCase()} Sandbox</span>
+                      <span>Server-Verified {paymentMethod.toUpperCase()} Checkout</span>
                     </div>
 
                     {!gatewaySession ? (
                       <button
                         type="button"
                         disabled={initiatingPay}
-                        onClick={handleStartSandboxPayment}
+                        onClick={handleStartDigitalPayment}
                         className="rounded-sm bg-[#183D35] px-4 py-2 text-xs font-medium text-[#FBF9F5] hover:bg-[#112C26]"
                       >
-                        {initiatingPay ? 'Initiating...' : `Initiate ${paymentMethod.toUpperCase()} Verification`}
+                        {initiatingPay ? 'Initiating...' : `Initiate ${paymentMethod.toUpperCase()} Payment`}
                       </button>
                     ) : paymentStatus === 'paid' ? (
                       <div className="flex items-center gap-2 text-xs font-semibold text-[#183D35]">
@@ -1561,18 +1560,10 @@ export const BookingPage: React.FC = () => {
                           <button
                             type="button"
                             disabled={verifyingPay}
-                            onClick={() => handleVerifySandboxPayment(false)}
+                            onClick={handleVerifyDigitalPayment}
                             className="rounded-sm bg-[#183D35] px-4 py-2 text-xs font-medium text-[#FBF9F5]"
                           >
-                            {verifyingPay ? 'Verifying...' : 'Complete Sandbox Verification'}
-                          </button>
-                          <button
-                            type="button"
-                            disabled={verifyingPay}
-                            onClick={() => handleVerifySandboxPayment(true)}
-                            className="rounded-sm border border-[#183D35]/25 px-4 py-2 text-xs font-medium text-[#252525]"
-                          >
-                            Simulate Declined Payment
+                            {verifyingPay ? 'Verifying...' : 'Verify & Confirm Payment'}
                           </button>
                         </div>
                       </div>

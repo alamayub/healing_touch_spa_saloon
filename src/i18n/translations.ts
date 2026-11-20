@@ -25,13 +25,11 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     facilitiesTitle: 'Treatment Suites, Hydrotherapy & Styling Floor',
     galleryTitle: 'Inside Our Spa & Salon Studio',
     teamTitle: 'Meet Our Therapists & Hair Stylists',
-    testimonialsTitle: 'Verified & Sample Guest Reviews',
+    testimonialsTitle: 'Verified Guest Reviews',
     socialTitle: 'Facebook & Instagram Highlights',
     offersTitle: 'Seasonal & Nepal Festival Offers',
     locationTitle: 'Visit Us in Aadarsh Nagar, Birgunj',
     whatsappCta: 'Message on WhatsApp',
-    demoNotice:
-      'Sample service catalog, pricing, and staff profiles are displayed for preview and can be customized anytime in the Admin Dashboard.',
     viewAllSpa: 'View Full Spa Menu',
     viewAllSalon: 'View Full Salon Menu',
     viewAllPackages: 'Explore All Packages',
@@ -75,8 +73,6 @@ export const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     offersTitle: 'चाडपर्व र मौसमी विशेष अफरहरू',
     locationTitle: 'आदर्श नगर, वीरगञ्जमा हामीलाई भेट्नुहोस्',
     whatsappCta: 'व्हाट्सएपमा सम्पर्क गर्नुहोस्',
-    demoNotice:
-      'यो नमुना सेवा सूची र मूल्य विवरण हो, जसलाई एडमिन ड्यासबोर्डबाट व्यवसायको वास्तविक विवरणअनुसार परिवर्तन गर्न सकिन्छ।',
     viewAllSpa: 'सबै स्पा सेवाहरू हेर्नुहोस्',
     viewAllSalon: 'सबै सैलुन सेवाहरू हेर्नुहोस्',
     viewAllPackages: 'प्याकेजहरू हेर्नुहोस्',

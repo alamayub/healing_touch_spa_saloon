@@ -15,6 +15,8 @@ import {
   LogOut,
   Menu,
   Package,
+  PanelLeftClose,
+  PanelLeftOpen,
   Scissors,
   Settings,
   Share2,
@@ -107,6 +109,7 @@ export const AdminDashboardPage: React.FC = () => {
   const { authReady, user, isAdmin } = useAppSelector((s) => s.ui);
   const [activeTab, setActiveTab] = useState<AdminTabId>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
   const handleSelectTab = (tabId: AdminTabId) => {
@@ -201,15 +204,35 @@ export const AdminDashboardPage: React.FC = () => {
       />
 
       {/* Sidebar Desktop */}
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-[#183D35]/15 bg-[#183D35] text-[#F6F0E7] lg:sticky lg:top-0 lg:flex lg:h-screen">
-        <div className="shrink-0 border-b border-[#F6F0E7]/10 px-6 py-5">
-          <Link to="/" className="font-display text-2xl font-medium text-[#FBF9F5]">
-            Healing Touch
-          </Link>
-          <p className="mt-0.5 text-[11px] text-[#C4A36A]">Admin Operations</p>
+      <aside
+        className={`hidden shrink-0 flex-col border-r border-[#183D35]/15 bg-[#183D35] text-[#F6F0E7] transition-[width] duration-200 lg:sticky lg:top-0 lg:flex lg:h-screen ${
+          sidebarCollapsed ? 'w-16' : 'w-64'
+        }`}
+      >
+        <div
+          className={`flex shrink-0 items-center border-b border-[#F6F0E7]/10 h-16 ${
+            sidebarCollapsed ? 'justify-center px-2' : 'justify-between px-5'
+          }`}
+        >
+          {sidebarCollapsed ? (
+            <Link
+              to="/"
+              title="Healing Touch Admin"
+              className="font-display text-xl font-semibold text-[#C4A36A]"
+            >
+              HT
+            </Link>
+          ) : (
+            <div className="min-w-0">
+              <Link to="/" className="block truncate font-display text-2xl font-medium text-[#FBF9F5]">
+                Healing Touch
+              </Link>
+              <p className="text-[11px] text-[#C4A36A]">Admin Operations</p>
+            </div>
+          )}
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+        <nav className="flex-1 overflow-y-auto px-2.5 py-4 space-y-0.5">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const active = activeTab === item.id;
@@ -217,28 +240,36 @@ export const AdminDashboardPage: React.FC = () => {
               <button
                 key={item.id}
                 type="button"
+                title={sidebarCollapsed ? item.label : undefined}
+                aria-label={item.label}
                 onClick={() => handleSelectTab(item.id)}
-                className={`flex w-full items-center gap-2.5 rounded-sm px-3 py-2 text-left text-xs font-medium transition-colors ${
+                className={`flex w-full items-center rounded-sm py-2 text-left text-xs font-medium transition-colors ${
+                  sidebarCollapsed ? 'justify-center px-2' : 'gap-2.5 px-3'
+                } ${
                   active
                     ? 'bg-[#C4A36A] text-[#183D35] font-semibold'
                     : 'text-[#F6F0E7]/85 hover:bg-[#112C26] hover:text-white'
                 }`}
               >
-                <Icon className="h-3.5 w-3.5 shrink-0" />
-                <span className="truncate">{item.label}</span>
+                <Icon className="h-4 w-4 shrink-0" />
+                {!sidebarCollapsed && <span className="truncate">{item.label}</span>}
               </button>
             );
           })}
         </nav>
 
-        <div className="border-t border-[#F6F0E7]/10 p-3">
+        <div className="shrink-0 border-t border-[#F6F0E7]/10 p-2.5">
           <button
             type="button"
+            title={sidebarCollapsed ? 'Logout' : undefined}
+            aria-label="Logout"
             onClick={handleLogout}
-            className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2 text-xs text-[#F6F0E7]/80 hover:bg-[#112C26] hover:text-white"
+            className={`flex w-full items-center rounded-sm py-2 text-xs text-[#F6F0E7]/80 hover:bg-[#112C26] hover:text-white ${
+              sidebarCollapsed ? 'justify-center px-2' : 'gap-2.5 px-3'
+            }`}
           >
-            <LogOut className="h-3.5 w-3.5" />
-            <span>Logout</span>
+            <LogOut className="h-4 w-4 shrink-0" />
+            {!sidebarCollapsed && <span>Logout</span>}
           </button>
         </div>
       </aside>
@@ -286,10 +317,23 @@ export const AdminDashboardPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="border border-[#183D35]/15 p-2 lg:hidden"
+              className="border border-[#183D35]/15 p-2 text-[#183D35] transition-colors hover:bg-[#F6F0E7] lg:hidden"
               aria-label="Open admin navigation"
             >
-              <Menu className="h-4 w-4 text-[#183D35]" />
+              <Menu className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setSidebarCollapsed((prev) => !prev)}
+              className="hidden border border-[#183D35]/15 p-2 text-[#183D35] transition-colors hover:bg-[#F6F0E7] lg:inline-flex"
+              aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {sidebarCollapsed ? (
+                <PanelLeftOpen className="h-4 w-4" />
+              ) : (
+                <PanelLeftClose className="h-4 w-4" />
+              )}
             </button>
             <div className="text-xs text-[#858078]">
               <span>Admin</span>

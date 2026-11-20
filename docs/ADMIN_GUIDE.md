@@ -6,9 +6,8 @@ Navigate to `/admin` and sign in with your authorized Google account. Initial su
 
 ## 1. Initial Setup & Seeding
 1. Open **Settings** in the admin sidebar.
-2. Click **Seed Catalog to Firestore** to initialize sample Spa Services, Salon Services, Categories, Packages, Team Members, Rooms, Gallery plates, Social dispatches, Offers, Journal articles, Reviews, and Nepal festival Holidays.
+2. Click **Sync Catalog to Firestore** to initialize Spa Services, Salon Services, Categories, Packages, Team Members, Rooms, Gallery plates, Social dispatches, Offers, Journal articles, Reviews, Bookings, Customers, Payments, Inquiries, and Nepal festival Holidays.
 3. Update **Business Settings** with live opening hours, phone, WhatsApp number, email, Google Maps/Facebook/Instagram links, hygiene notes, and cancellation policies.
-4. Once sample entries have been replaced with real business content, toggle **Show Demo Content Notice Banner** off.
 
 ---
 

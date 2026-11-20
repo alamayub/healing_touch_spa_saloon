@@ -15,12 +15,18 @@ import {
 } from 'firebase/firestore';
 import {
   DEFAULT_BUSINESS_SETTINGS,
+  DEMO_ADMINS,
+  DEMO_AUDIT_LOGS,
   DEMO_BLOG_POSTS,
+  DEMO_BOOKINGS,
   DEMO_CATEGORIES,
+  DEMO_CONTACT_MESSAGES,
+  DEMO_CUSTOMERS,
   DEMO_GALLERY,
   DEMO_HOLIDAYS,
   DEMO_OFFERS,
   DEMO_PACKAGES,
+  DEMO_PAYMENTS,
   DEMO_REVIEWS,
   DEMO_ROOMS,
   DEMO_SALON_SERVICES,
@@ -62,16 +68,23 @@ function normalizeTimestamp(val: unknown): string {
   return new Date().toISOString();
 }
 
+function isPermissionError(error: unknown): boolean {
+  const msg = error instanceof Error ? error.message : String(error);
+  return msg.includes('Missing or insufficient permissions') || msg.includes('PERMISSION_DENIED');
+}
+
 export async function fetchSpaServices(includeDrafts = false): Promise<SpaService[]> {
   try {
     const colRef = collection(db, 'spaServices');
     const q = includeDrafts ? colRef : query(colRef, where('published', '==', true));
     const snap = await getDocs(q);
-    if (snap.empty && !includeDrafts) return DEMO_SPA_SERVICES;
+    if (snap.empty) return DEMO_SPA_SERVICES;
     return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<SpaService, 'id'>) }));
   } catch (error) {
-    if (!includeDrafts) return DEMO_SPA_SERVICES;
-    handleFirestoreError(error, OperationType.LIST, 'spaServices');
+    if (includeDrafts && isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'spaServices');
+    }
+    return DEMO_SPA_SERVICES;
   }
 }
 
@@ -96,11 +109,13 @@ export async function fetchSalonServices(includeDrafts = false): Promise<SalonSe
     const colRef = collection(db, 'salonServices');
     const q = includeDrafts ? colRef : query(colRef, where('published', '==', true));
     const snap = await getDocs(q);
-    if (snap.empty && !includeDrafts) return DEMO_SALON_SERVICES;
+    if (snap.empty) return DEMO_SALON_SERVICES;
     return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<SalonService, 'id'>) }));
   } catch (error) {
-    if (!includeDrafts) return DEMO_SALON_SERVICES;
-    handleFirestoreError(error, OperationType.LIST, 'salonServices');
+    if (includeDrafts && isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'salonServices');
+    }
+    return DEMO_SALON_SERVICES;
   }
 }
 
@@ -125,13 +140,15 @@ export async function fetchCategories(includeInactive = false): Promise<ServiceC
     const colRef = collection(db, 'serviceCategories');
     const q = includeInactive ? colRef : query(colRef, where('active', '==', true));
     const snap = await getDocs(q);
-    if (snap.empty && !includeInactive) return DEMO_CATEGORIES;
+    if (snap.empty) return DEMO_CATEGORIES;
     return snap.docs
       .map((d) => ({ id: d.id, ...(d.data() as Omit<ServiceCategory, 'id'>) }))
       .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
   } catch (error) {
-    if (!includeInactive) return DEMO_CATEGORIES;
-    handleFirestoreError(error, OperationType.LIST, 'serviceCategories');
+    if (includeInactive && isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'serviceCategories');
+    }
+    return DEMO_CATEGORIES;
   }
 }
 
@@ -156,11 +173,13 @@ export async function fetchPackages(includeDrafts = false): Promise<WellnessPack
     const colRef = collection(db, 'packages');
     const q = includeDrafts ? colRef : query(colRef, where('published', '==', true));
     const snap = await getDocs(q);
-    if (snap.empty && !includeDrafts) return DEMO_PACKAGES;
+    if (snap.empty) return DEMO_PACKAGES;
     return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<WellnessPackage, 'id'>) }));
   } catch (error) {
-    if (!includeDrafts) return DEMO_PACKAGES;
-    handleFirestoreError(error, OperationType.LIST, 'packages');
+    if (includeDrafts && isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'packages');
+    }
+    return DEMO_PACKAGES;
   }
 }
 
@@ -185,11 +204,13 @@ export async function fetchStaff(includeUnavailable = false): Promise<StaffMembe
     const colRef = collection(db, 'staff');
     const q = includeUnavailable ? colRef : query(colRef, where('availableForBooking', '==', true));
     const snap = await getDocs(q);
-    if (snap.empty && !includeUnavailable) return DEMO_STAFF;
+    if (snap.empty) return DEMO_STAFF;
     return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<StaffMember, 'id'>) }));
   } catch (error) {
-    if (!includeUnavailable) return DEMO_STAFF;
-    handleFirestoreError(error, OperationType.LIST, 'staff');
+    if (includeUnavailable && isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'staff');
+    }
+    return DEMO_STAFF;
   }
 }
 
@@ -214,11 +235,13 @@ export async function fetchRooms(includeInactive = false): Promise<SpaRoom[]> {
     const colRef = collection(db, 'spaRooms');
     const q = includeInactive ? colRef : query(colRef, where('status', 'in', ['available', 'maintenance']));
     const snap = await getDocs(q);
-    if (snap.empty && !includeInactive) return DEMO_ROOMS;
+    if (snap.empty) return DEMO_ROOMS;
     return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<SpaRoom, 'id'>) }));
   } catch (error) {
-    if (!includeInactive) return DEMO_ROOMS;
-    handleFirestoreError(error, OperationType.LIST, 'spaRooms');
+    if (includeInactive && isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'spaRooms');
+    }
+    return DEMO_ROOMS;
   }
 }
 
@@ -448,6 +471,7 @@ export async function fetchBookingsForAdmin(): Promise<Booking[]> {
   try {
     const q = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));
     const snap = await getDocs(q);
+    if (snap.empty) return DEMO_BOOKINGS;
     return snap.docs.map((d) => {
       const data = d.data();
       return {
@@ -458,7 +482,10 @@ export async function fetchBookingsForAdmin(): Promise<Booking[]> {
       };
     });
   } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, 'bookings');
+    if (isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'bookings');
+    }
+    return DEMO_BOOKINGS;
   }
 }
 
@@ -527,20 +554,60 @@ export async function updateBookingStatusAndAllocation(
   }
 
   try {
+    const bookingDocRef = doc(db, 'bookings', bookingId);
+    const slotDocRef = doc(db, 'bookingSlots', bookingId);
+    const existingBookingSnap = await getDoc(bookingDocRef);
     const batch = writeBatch(db);
     const nowIso = new Date().toISOString();
-    batch.update(doc(db, 'bookings', bookingId), { ...updates, updatedAt: nowIso });
 
-    const slotUpdates: Record<string, unknown> = {};
-    if (updates.status) slotUpdates.status = updates.status;
-    if (updates.staffId !== undefined) slotUpdates.staffId = updates.staffId;
-    if (updates.roomId !== undefined) slotUpdates.roomId = updates.roomId;
-    if (updates.date) slotUpdates.date = updates.date;
-    if (updates.startTime) slotUpdates.startTime = updates.startTime;
-    if (updates.endTime) slotUpdates.endTime = updates.endTime;
+    if (!existingBookingSnap.exists()) {
+      const demoSource = DEMO_BOOKINGS.find((b) => b.id === bookingId);
+      if (!demoSource) {
+        throw new Error(`Booking record ${bookingId} was not found in Firestore.`);
+      }
+      const mergedBooking: Record<string, unknown> = {
+        ...demoSource,
+        ...updates,
+        createdAt: serverTimestamp(),
+        updatedAt: nowIso,
+      };
+      if (!mergedBooking.userId) delete mergedBooking.userId;
+      if (!mergedBooking.staffId) delete mergedBooking.staffId;
+      if (!mergedBooking.roomId) delete mergedBooking.roomId;
+      if (!mergedBooking.customerEmail) delete mergedBooking.customerEmail;
+      if (!mergedBooking.notes) delete mergedBooking.notes;
+      if (!mergedBooking.comfortPreferences) delete mergedBooking.comfortPreferences;
 
-    if (Object.keys(slotUpdates).length > 0) {
-      batch.update(doc(db, 'bookingSlots', bookingId), slotUpdates);
+      const slotPayload: Record<string, unknown> = {
+        id: demoSource.id,
+        bookingId: demoSource.id,
+        date: (updates.date || demoSource.date) as string,
+        startTime: (updates.startTime || demoSource.startTime) as string,
+        endTime: (updates.endTime || demoSource.endTime) as string,
+        status: (updates.status || demoSource.status) as BookingStatus,
+        createdAt: serverTimestamp(),
+      };
+      const resolvedStaffId = updates.staffId !== undefined ? updates.staffId : demoSource.staffId;
+      const resolvedRoomId = updates.roomId !== undefined ? updates.roomId : demoSource.roomId;
+      if (resolvedStaffId) slotPayload.staffId = resolvedStaffId;
+      if (resolvedRoomId) slotPayload.roomId = resolvedRoomId;
+
+      batch.set(bookingDocRef, mergedBooking);
+      batch.set(slotDocRef, slotPayload);
+    } else {
+      batch.update(bookingDocRef, { ...updates, updatedAt: nowIso });
+
+      const slotUpdates: Record<string, unknown> = {};
+      if (updates.status) slotUpdates.status = updates.status;
+      if (updates.staffId !== undefined) slotUpdates.staffId = updates.staffId;
+      if (updates.roomId !== undefined) slotUpdates.roomId = updates.roomId;
+      if (updates.date) slotUpdates.date = updates.date;
+      if (updates.startTime) slotUpdates.startTime = updates.startTime;
+      if (updates.endTime) slotUpdates.endTime = updates.endTime;
+
+      if (Object.keys(slotUpdates).length > 0) {
+        batch.update(slotDocRef, slotUpdates);
+      }
     }
 
     await batch.commit();
@@ -551,6 +618,8 @@ export async function updateBookingStatusAndAllocation(
 
 export async function deleteBookingRecord(bookingId: string): Promise<void> {
   try {
+    const snap = await getDoc(doc(db, 'bookings', bookingId));
+    if (!snap.exists()) return;
     const batch = writeBatch(db);
     batch.delete(doc(db, 'bookings', bookingId));
     batch.delete(doc(db, 'bookingSlots', bookingId));
@@ -581,11 +650,13 @@ export async function fetchGallery(includeDrafts = false): Promise<GalleryItem[]
     const colRef = collection(db, 'gallery');
     const q = includeDrafts ? colRef : query(colRef, where('published', '==', true));
     const snap = await getDocs(q);
-    if (snap.empty && !includeDrafts) return DEMO_GALLERY;
+    if (snap.empty) return DEMO_GALLERY;
     return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<GalleryItem, 'id'>) }));
   } catch (error) {
-    if (!includeDrafts) return DEMO_GALLERY;
-    handleFirestoreError(error, OperationType.LIST, 'gallery');
+    if (includeDrafts && isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'gallery');
+    }
+    return DEMO_GALLERY;
   }
 }
 
@@ -610,11 +681,13 @@ export async function fetchSocialPosts(includeDrafts = false): Promise<SocialPos
     const colRef = collection(db, 'socialPosts');
     const q = includeDrafts ? colRef : query(colRef, where('published', '==', true));
     const snap = await getDocs(q);
-    if (snap.empty && !includeDrafts) return DEMO_SOCIAL_POSTS;
+    if (snap.empty) return DEMO_SOCIAL_POSTS;
     return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<SocialPost, 'id'>) }));
   } catch (error) {
-    if (!includeDrafts) return DEMO_SOCIAL_POSTS;
-    handleFirestoreError(error, OperationType.LIST, 'socialPosts');
+    if (includeDrafts && isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'socialPosts');
+    }
+    return DEMO_SOCIAL_POSTS;
   }
 }
 
@@ -639,11 +712,13 @@ export async function fetchBlogPosts(includeDrafts = false): Promise<BlogPost[]>
     const colRef = collection(db, 'blogPosts');
     const q = includeDrafts ? colRef : query(colRef, where('published', '==', true));
     const snap = await getDocs(q);
-    if (snap.empty && !includeDrafts) return DEMO_BLOG_POSTS;
+    if (snap.empty) return DEMO_BLOG_POSTS;
     return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<BlogPost, 'id'>) }));
   } catch (error) {
-    if (!includeDrafts) return DEMO_BLOG_POSTS;
-    handleFirestoreError(error, OperationType.LIST, 'blogPosts');
+    if (includeDrafts && isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'blogPosts');
+    }
+    return DEMO_BLOG_POSTS;
   }
 }
 
@@ -668,11 +743,13 @@ export async function fetchOffers(includeInactive = false): Promise<Offer[]> {
     const colRef = collection(db, 'offers');
     const q = includeInactive ? colRef : query(colRef, where('active', '==', true));
     const snap = await getDocs(q);
-    if (snap.empty && !includeInactive) return DEMO_OFFERS;
+    if (snap.empty) return DEMO_OFFERS;
     return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Offer, 'id'>) }));
   } catch (error) {
-    if (!includeInactive) return DEMO_OFFERS;
-    handleFirestoreError(error, OperationType.LIST, 'offers');
+    if (includeInactive && isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'offers');
+    }
+    return DEMO_OFFERS;
   }
 }
 
@@ -697,15 +774,17 @@ export async function fetchReviews(includePending = false): Promise<Review[]> {
     const colRef = collection(db, 'reviews');
     const q = includePending ? colRef : query(colRef, where('published', '==', true));
     const snap = await getDocs(q);
-    if (snap.empty && !includePending) return DEMO_REVIEWS;
+    if (snap.empty) return DEMO_REVIEWS;
     return snap.docs.map((d) => ({
       id: d.id,
       ...(d.data() as Omit<Review, 'id'>),
       createdAt: normalizeTimestamp(d.data().createdAt),
     }));
   } catch (error) {
-    if (!includePending) return DEMO_REVIEWS;
-    handleFirestoreError(error, OperationType.LIST, 'reviews');
+    if (includePending && isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'reviews');
+    }
+    return DEMO_REVIEWS;
   }
 }
 
@@ -722,7 +801,17 @@ export async function submitReview(review: Omit<Review, 'createdAt'>): Promise<v
 
 export async function updateReviewPublish(id: string, published: boolean): Promise<void> {
   try {
-    await updateDoc(doc(db, 'reviews', id), { published });
+    const ref = doc(db, 'reviews', id);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      const demo = DEMO_REVIEWS.find((r) => r.id === id);
+      if (demo) {
+        const { createdAt: _ignored, ...rest } = demo;
+        await setDoc(ref, { ...rest, published, createdAt: serverTimestamp() });
+        return;
+      }
+    }
+    await updateDoc(ref, { published });
   } catch (error) {
     handleFirestoreError(error, OperationType.UPDATE, `reviews/${id}`);
   }
@@ -766,9 +855,13 @@ export async function deleteHoliday(id: string): Promise<void> {
 export async function fetchCustomersForAdmin(): Promise<CustomerRecord[]> {
   try {
     const snap = await getDocs(collection(db, 'customers'));
+    if (snap.empty) return DEMO_CUSTOMERS;
     return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<CustomerRecord, 'id'>) }));
   } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, 'customers');
+    if (isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'customers');
+    }
+    return DEMO_CUSTOMERS;
   }
 }
 
@@ -792,13 +885,17 @@ export async function fetchPaymentsForAdmin(): Promise<PaymentRecord[]> {
   try {
     const q = query(collection(db, 'payments'), orderBy('createdAt', 'desc'));
     const snap = await getDocs(q);
+    if (snap.empty) return DEMO_PAYMENTS;
     return snap.docs.map((d) => ({
       id: d.id,
       ...(d.data() as Omit<PaymentRecord, 'id'>),
       createdAt: normalizeTimestamp(d.data().createdAt),
     }));
   } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, 'payments');
+    if (isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'payments');
+    }
+    return DEMO_PAYMENTS;
   }
 }
 
@@ -820,7 +917,20 @@ export async function updatePaymentRecordStatus(
   status: PaymentRecord['status']
 ): Promise<void> {
   try {
-    await updateDoc(doc(db, 'payments', id), { status });
+    const ref = doc(db, 'payments', id);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      const demo = DEMO_PAYMENTS.find((p) => p.id === id);
+      if (demo) {
+        const { createdAt: _ignored, ...rest } = demo;
+        const payload: Record<string, unknown> = { ...rest, status, createdAt: serverTimestamp() };
+        if (!payload.userId) delete payload.userId;
+        if (!payload.gatewayRef) delete payload.gatewayRef;
+        await setDoc(ref, payload);
+        return;
+      }
+    }
+    await updateDoc(ref, { status });
   } catch (error) {
     handleFirestoreError(error, OperationType.UPDATE, `payments/${id}`);
   }
@@ -842,13 +952,17 @@ export async function fetchContactMessagesForAdmin(): Promise<ContactMessage[]> 
   try {
     const q = query(collection(db, 'contactMessages'), orderBy('createdAt', 'desc'));
     const snap = await getDocs(q);
+    if (snap.empty) return DEMO_CONTACT_MESSAGES;
     return snap.docs.map((d) => ({
       id: d.id,
       ...(d.data() as Omit<ContactMessage, 'id'>),
       createdAt: normalizeTimestamp(d.data().createdAt),
     }));
   } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, 'contactMessages');
+    if (isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'contactMessages');
+    }
+    return DEMO_CONTACT_MESSAGES;
   }
 }
 
@@ -857,7 +971,20 @@ export async function updateContactMessageStatus(
   status: ContactMessage['status']
 ): Promise<void> {
   try {
-    await updateDoc(doc(db, 'contactMessages', id), { status });
+    const ref = doc(db, 'contactMessages', id);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      const demo = DEMO_CONTACT_MESSAGES.find((m) => m.id === id);
+      if (demo) {
+        const { createdAt: _ignored, ...rest } = demo;
+        const payload: Record<string, unknown> = { ...rest, status, createdAt: serverTimestamp() };
+        if (!payload.email) delete payload.email;
+        if (!payload.subject) delete payload.subject;
+        await setDoc(ref, payload);
+        return;
+      }
+    }
+    await updateDoc(ref, { status });
   } catch (error) {
     handleFirestoreError(error, OperationType.UPDATE, `contactMessages/${id}`);
   }
@@ -874,9 +1001,13 @@ export async function deleteContactMessage(id: string): Promise<void> {
 export async function fetchAdminUsers(): Promise<AdminUserRecord[]> {
   try {
     const snap = await getDocs(collection(db, 'admins'));
+    if (snap.empty) return DEMO_ADMINS;
     return snap.docs.map((d) => ({ uid: d.id, ...(d.data() as Omit<AdminUserRecord, 'uid'>) }));
   } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, 'admins');
+    if (isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'admins');
+    }
+    return DEMO_ADMINS;
   }
 }
 
@@ -914,9 +1045,13 @@ export async function fetchAuditLogs(): Promise<AuditLog[]> {
   try {
     const q = query(collection(db, 'auditLogs'), orderBy('createdAt', 'desc'));
     const snap = await getDocs(q);
+    if (snap.empty) return DEMO_AUDIT_LOGS;
     return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<AuditLog, 'id'>) }));
   } catch (error) {
-    handleFirestoreError(error, OperationType.LIST, 'auditLogs');
+    if (isPermissionError(error)) {
+      handleFirestoreError(error, OperationType.LIST, 'auditLogs');
+    }
+    return DEMO_AUDIT_LOGS;
   }
 }
 
@@ -933,6 +1068,20 @@ export async function checkIsCurrentUserAdmin(): Promise<boolean> {
 }
 
 export async function seedDemoCatalogToFirestore(): Promise<void> {
+  const [
+    existingAuditLogs,
+    existingReviews,
+    existingBookings,
+    existingPayments,
+    existingContactMsgs,
+  ] = await Promise.all([
+    Promise.all(DEMO_AUDIT_LOGS.map((l) => getDoc(doc(db, 'auditLogs', l.id)))),
+    Promise.all(DEMO_REVIEWS.map((r) => getDoc(doc(db, 'reviews', r.id)))),
+    Promise.all(DEMO_BOOKINGS.map((b) => getDoc(doc(db, 'bookings', b.id)))),
+    Promise.all(DEMO_PAYMENTS.map((p) => getDoc(doc(db, 'payments', p.id)))),
+    Promise.all(DEMO_CONTACT_MESSAGES.map((m) => getDoc(doc(db, 'contactMessages', m.id)))),
+  ]);
+
   const batch = writeBatch(db);
   batch.set(doc(db, 'settings', 'business'), { ...DEFAULT_BUSINESS_SETTINGS, updatedAt: new Date().toISOString() }, { merge: true });
   DEMO_CATEGORIES.forEach((c) => batch.set(doc(db, 'serviceCategories', c.id), c, { merge: true }));
@@ -945,7 +1094,73 @@ export async function seedDemoCatalogToFirestore(): Promise<void> {
   DEMO_SOCIAL_POSTS.forEach((p) => batch.set(doc(db, 'socialPosts', p.id), p, { merge: true }));
   DEMO_BLOG_POSTS.forEach((b) => batch.set(doc(db, 'blogPosts', b.id), b, { merge: true }));
   DEMO_OFFERS.forEach((o) => batch.set(doc(db, 'offers', o.id), o, { merge: true }));
-  DEMO_REVIEWS.forEach((r) => batch.set(doc(db, 'reviews', r.id), r, { merge: true }));
   DEMO_HOLIDAYS.forEach((h) => batch.set(doc(db, 'holidays', h.id), h, { merge: true }));
-  await batch.commit();
+  DEMO_CUSTOMERS.forEach((cu) => batch.set(doc(db, 'customers', cu.id), { ...cu, updatedAt: new Date().toISOString() }, { merge: true }));
+
+  DEMO_AUDIT_LOGS.forEach((log, idx) => {
+    if (!existingAuditLogs[idx].exists()) {
+      batch.set(doc(db, 'auditLogs', log.id), log);
+    }
+  });
+
+  DEMO_REVIEWS.forEach((r, idx) => {
+    if (!existingReviews[idx].exists()) {
+      const { createdAt: _ignored, ...rest } = r;
+      batch.set(doc(db, 'reviews', r.id), { ...rest, createdAt: serverTimestamp() });
+    }
+  });
+
+  DEMO_BOOKINGS.forEach((b, idx) => {
+    if (!existingBookings[idx].exists()) {
+      const { createdAt: _ignored, updatedAt: _u, ...rest } = b;
+      const bookingPayload: Record<string, unknown> = { ...rest, createdAt: serverTimestamp() };
+      if (!bookingPayload.userId) delete bookingPayload.userId;
+      if (!bookingPayload.staffId) delete bookingPayload.staffId;
+      if (!bookingPayload.roomId) delete bookingPayload.roomId;
+      if (!bookingPayload.customerEmail) delete bookingPayload.customerEmail;
+      if (!bookingPayload.notes) delete bookingPayload.notes;
+      if (!bookingPayload.comfortPreferences) delete bookingPayload.comfortPreferences;
+
+      const slotPayload: Record<string, unknown> = {
+        id: b.id,
+        bookingId: b.id,
+        date: b.date,
+        startTime: b.startTime,
+        endTime: b.endTime,
+        status: b.status,
+        createdAt: serverTimestamp(),
+      };
+      if (b.staffId) slotPayload.staffId = b.staffId;
+      if (b.roomId) slotPayload.roomId = b.roomId;
+
+      batch.set(doc(db, 'bookings', b.id), bookingPayload);
+      batch.set(doc(db, 'bookingSlots', b.id), slotPayload);
+    }
+  });
+
+  DEMO_PAYMENTS.forEach((p, idx) => {
+    if (!existingPayments[idx].exists()) {
+      const { createdAt: _ignored, ...rest } = p;
+      const payPayload: Record<string, unknown> = { ...rest, createdAt: serverTimestamp() };
+      if (!payPayload.userId) delete payPayload.userId;
+      if (!payPayload.gatewayRef) delete payPayload.gatewayRef;
+      batch.set(doc(db, 'payments', p.id), payPayload);
+    }
+  });
+
+  DEMO_CONTACT_MESSAGES.forEach((m, idx) => {
+    if (!existingContactMsgs[idx].exists()) {
+      const { createdAt: _ignored, ...rest } = m;
+      const msgPayload: Record<string, unknown> = { ...rest, createdAt: serverTimestamp() };
+      if (!msgPayload.email) delete msgPayload.email;
+      if (!msgPayload.subject) delete msgPayload.subject;
+      batch.set(doc(db, 'contactMessages', m.id), msgPayload);
+    }
+  });
+
+  try {
+    await batch.commit();
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, 'seed-catalog');
+  }
 }
