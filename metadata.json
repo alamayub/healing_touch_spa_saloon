@@ -1,0 +1,6 @@
+{
+  "name": "Healing Touch Spa & Saloon",
+  "description": "Luxury wellness spa, massage sanctuary, and unisex beauty salon in Aadarsh Nagar, Birgunj, Nepal — featuring advanced appointment booking, couples suites, and a complete management platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

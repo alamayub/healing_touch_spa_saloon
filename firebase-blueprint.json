@@ -1,0 +1,499 @@
+{
+  "entities": {
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Authorized admin or staff role assignment keyed by Firebase Auth UID.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "format": "email", "maxLength": 160 },
+        "displayName": { "type": "string", "maxLength": 120 },
+        "role": { "type": "string", "enum": ["super_admin", "manager", "receptionist", "therapist", "stylist"] },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "active", "createdAt"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated user account profile.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "displayName": { "type": "string", "maxLength": 120 },
+        "email": { "type": "string", "format": "email", "maxLength": 160 },
+        "phone": { "type": "string", "maxLength": 24 },
+        "preferredLanguage": { "type": "string", "enum": ["en", "ne"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "createdAt"]
+    },
+    "ServiceCategory": {
+      "title": "ServiceCategory",
+      "description": "Category grouping for spa or unisex salon services.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "nameNe": { "type": "string", "maxLength": 120 },
+        "division": { "type": "string", "enum": ["spa", "salon"] },
+        "description": { "type": "string", "maxLength": 400 },
+        "sortOrder": { "type": "number" },
+        "active": { "type": "boolean" }
+      },
+      "required": ["id", "name", "division", "active"]
+    },
+    "SpaService": {
+      "title": "SpaService",
+      "description": "Curated spa treatment offering.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "nameNe": { "type": "string", "maxLength": 140 },
+        "category": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "involves": { "type": "string", "maxLength": 600 },
+        "durationMinutes": { "type": "number" },
+        "bufferMinutes": { "type": "number" },
+        "priceNpr": { "type": "number" },
+        "couplePriceNpr": { "type": "number" },
+        "supportsCouple": { "type": "boolean" },
+        "roomTypeRequired": { "type": "string", "enum": ["single_suite", "couple_suite", "hydro_suite", "reflexology_lounge", "any"] },
+        "imageUrl": { "type": "string", "maxLength": 500 },
+        "visualKey": { "type": "string", "maxLength": 64 },
+        "featured": { "type": "boolean" },
+        "published": { "type": "boolean" },
+        "verifiedByBusiness": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "category", "description", "durationMinutes", "bufferMinutes", "priceNpr", "supportsCouple", "published"]
+    },
+    "SalonService": {
+      "title": "SalonService",
+      "description": "Unisex beauty and hair salon service offering.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "nameNe": { "type": "string", "maxLength": 140 },
+        "category": { "type": "string", "maxLength": 100 },
+        "audience": { "type": "string", "enum": ["unisex", "women", "men"] },
+        "description": { "type": "string", "maxLength": 1000 },
+        "durationMinutes": { "type": "number" },
+        "bufferMinutes": { "type": "number" },
+        "priceNpr": { "type": "number" },
+        "imageUrl": { "type": "string", "maxLength": 500 },
+        "visualKey": { "type": "string", "maxLength": 64 },
+        "featured": { "type": "boolean" },
+        "published": { "type": "boolean" },
+        "verifiedByBusiness": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "category", "audience", "description", "durationMinutes", "bufferMinutes", "priceNpr", "published"]
+    },
+    "WellnessPackage": {
+      "title": "WellnessPackage",
+      "description": "Combined spa and/or salon ritual package.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 2, "maxLength": 140 },
+        "nameNe": { "type": "string", "maxLength": 160 },
+        "category": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "includedServiceIds": { "type": "array" },
+        "includedServiceNames": { "type": "array" },
+        "totalDurationMinutes": { "type": "number" },
+        "packagePriceNpr": { "type": "number" },
+        "regularPriceNpr": { "type": "number" },
+        "savingsVerified": { "type": "boolean" },
+        "supportsCouple": { "type": "boolean" },
+        "imageUrl": { "type": "string", "maxLength": 500 },
+        "visualKey": { "type": "string", "maxLength": 64 },
+        "featured": { "type": "boolean" },
+        "published": { "type": "boolean" }
+      },
+      "required": ["id", "name", "category", "description", "includedServiceNames", "totalDurationMinutes", "packagePriceNpr", "published"]
+    },
+    "StaffMember": {
+      "title": "StaffMember",
+      "description": "Spa therapist, salon stylist, or management professional.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "designation": { "type": "string", "maxLength": 120 },
+        "division": { "type": "string", "enum": ["spa", "salon", "both", "management"] },
+        "experienceYears": { "type": "number" },
+        "bio": { "type": "string", "maxLength": 800 },
+        "specializations": { "type": "array" },
+        "skills": { "type": "array" },
+        "languages": { "type": "array" },
+        "workingDays": { "type": "array" },
+        "shiftStart": { "type": "string", "maxLength": 10 },
+        "shiftEnd": { "type": "string", "maxLength": 10 },
+        "breakStart": { "type": "string", "maxLength": 10 },
+        "breakEnd": { "type": "string", "maxLength": 10 },
+        "availableForBooking": { "type": "boolean" },
+        "verified": { "type": "boolean" },
+        "avatarUrl": { "type": "string", "maxLength": 500 }
+      },
+      "required": ["id", "name", "designation", "division", "experienceYears", "availableForBooking"]
+    },
+    "SpaRoom": {
+      "title": "SpaRoom",
+      "description": "Physical spa treatment suite or salon station.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "roomType": { "type": "string", "enum": ["single_suite", "couple_suite", "hydro_suite", "reflexology_lounge", "salon_studio", "bridal_suite"] },
+        "capacity": { "type": "number" },
+        "supportsCouple": { "type": "boolean" },
+        "facilities": { "type": "array" },
+        "status": { "type": "string", "enum": ["available", "maintenance", "inactive"] },
+        "verified": { "type": "boolean" },
+        "notes": { "type": "string", "maxLength": 400 }
+      },
+      "required": ["id", "name", "roomType", "capacity", "supportsCouple", "status"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "Spa, salon, or package appointment reservation.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "bookingRef": { "type": "string", "maxLength": 32 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "category": { "type": "string", "enum": ["spa", "salon", "package"] },
+        "serviceIds": { "type": "array" },
+        "serviceNames": { "type": "array" },
+        "isCouple": { "type": "boolean" },
+        "guestCount": { "type": "number" },
+        "staffId": { "type": "string", "maxLength": 128 },
+        "staffName": { "type": "string", "maxLength": 120 },
+        "roomId": { "type": "string", "maxLength": 128 },
+        "roomName": { "type": "string", "maxLength": 120 },
+        "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", "maxLength": 12 },
+        "startTime": { "type": "string", "maxLength": 10 },
+        "endTime": { "type": "string", "maxLength": 10 },
+        "durationMinutes": { "type": "number" },
+        "bufferMinutes": { "type": "number" },
+        "totalNpr": { "type": "number" },
+        "customerName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "customerPhone": { "type": "string", "minLength": 7, "maxLength": 24 },
+        "customerEmail": { "type": "string", "maxLength": 160 },
+        "preferredLanguage": { "type": "string", "enum": ["en", "ne"] },
+        "notes": { "type": "string", "maxLength": 600 },
+        "comfortPreferences": { "type": "string", "maxLength": 400 },
+        "consentAccepted": { "type": "boolean" },
+        "agePolicyConfirmed": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "completed", "cancelled", "rejected", "no_show"] },
+        "paymentMethod": { "type": "string", "enum": ["cash", "esewa", "khalti", "fonepay"] },
+        "paymentStatus": { "type": "string", "enum": ["pending", "advance_paid", "paid", "refunded", "failed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "bookingRef", "category", "serviceNames", "date", "startTime", "endTime", "durationMinutes", "totalNpr", "customerName", "customerPhone", "consentAccepted", "agePolicyConfirmed", "status", "paymentMethod", "paymentStatus", "createdAt"]
+    },
+    "BookingSlot": {
+      "title": "BookingSlot",
+      "description": "De-identified appointment time slot for real-time conflict prevention without exposing PII.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "bookingId": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", "maxLength": 12 },
+        "startTime": { "type": "string", "maxLength": 10 },
+        "endTime": { "type": "string", "maxLength": 10 },
+        "staffId": { "type": "string", "maxLength": 128 },
+        "roomId": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "completed", "cancelled", "rejected", "no_show"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "bookingId", "date", "startTime", "endTime", "status", "createdAt"]
+    },
+    "PaymentRecord": {
+      "title": "PaymentRecord",
+      "description": "Booking payment transaction and verification audit record.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "bookingId": { "type": "string", "maxLength": 128 },
+        "bookingRef": { "type": "string", "maxLength": 32 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "method": { "type": "string", "enum": ["cash", "esewa", "khalti", "fonepay"] },
+        "amountNpr": { "type": "number" },
+        "isAdvance": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["pending", "verified", "refunded", "failed"] },
+        "gatewayRef": { "type": "string", "maxLength": 128 },
+        "verifiedByServer": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "bookingId", "bookingRef", "method", "amountNpr", "status", "createdAt"]
+    },
+    "CustomerRecord": {
+      "title": "CustomerRecord",
+      "description": "Admin-managed customer profile and visit ledger.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "fullName": { "type": "string", "maxLength": 120 },
+        "phone": { "type": "string", "maxLength": 24 },
+        "email": { "type": "string", "maxLength": 160 },
+        "preferredLanguage": { "type": "string", "enum": ["en", "ne"] },
+        "preferences": { "type": "string", "maxLength": 400 },
+        "totalBookings": { "type": "number" },
+        "lastVisitDate": { "type": "string", "maxLength": 24 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "fullName", "phone", "totalBookings"]
+    },
+    "GalleryItem": {
+      "title": "GalleryItem",
+      "description": "Gallery photograph, video, or before-and-after transformation entry.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "maxLength": 140 },
+        "category": { "type": "string", "maxLength": 80 },
+        "mediaType": { "type": "string", "enum": ["image", "video", "before_after"] },
+        "imageUrl": { "type": "string", "maxLength": 500 },
+        "beforeImageUrl": { "type": "string", "maxLength": 500 },
+        "visualKey": { "type": "string", "maxLength": 64 },
+        "caption": { "type": "string", "maxLength": 400 },
+        "published": { "type": "boolean" }
+      },
+      "required": ["id", "title", "category", "mediaType", "published"]
+    },
+    "SocialPost": {
+      "title": "SocialPost",
+      "description": "Admin-curated Facebook or Instagram update, reel, or offer.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "platform": { "type": "string", "enum": ["facebook", "instagram"] },
+        "postType": { "type": "string", "enum": ["photo", "reel", "offer", "announcement"] },
+        "title": { "type": "string", "maxLength": 140 },
+        "caption": { "type": "string", "maxLength": 1000 },
+        "externalUrl": { "type": "string", "maxLength": 500 },
+        "imageUrl": { "type": "string", "maxLength": 500 },
+        "visualKey": { "type": "string", "maxLength": 64 },
+        "publishedAt": { "type": "string", "maxLength": 32 },
+        "published": { "type": "boolean" }
+      },
+      "required": ["id", "platform", "postType", "title", "caption", "published"]
+    },
+    "BlogPost": {
+      "title": "BlogPost",
+      "description": "Editorial wellness & grooming journal post.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "slug": { "type": "string", "maxLength": 128, "pattern": "^[a-z0-9\\-]+$" },
+        "title": { "type": "string", "maxLength": 180 },
+        "excerpt": { "type": "string", "maxLength": 400 },
+        "content": { "type": "string", "maxLength": 8000 },
+        "category": { "type": "string", "maxLength": 80 },
+        "author": { "type": "string", "maxLength": 100 },
+        "readMinutes": { "type": "number" },
+        "publishedAt": { "type": "string", "maxLength": 32 },
+        "published": { "type": "boolean" }
+      },
+      "required": ["id", "slug", "title", "excerpt", "content", "category", "published"]
+    },
+    "Offer": {
+      "title": "Offer",
+      "description": "Nepal seasonal, festival, or membership special offer.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "maxLength": 140 },
+        "festivalTag": { "type": "string", "maxLength": 60 },
+        "description": { "type": "string", "maxLength": 600 },
+        "discountLabel": { "type": "string", "maxLength": 60 },
+        "promoCode": { "type": "string", "maxLength": 32 },
+        "validUntil": { "type": "string", "maxLength": 32 },
+        "applicableTo": { "type": "string", "enum": ["spa", "salon", "packages", "all"] },
+        "active": { "type": "boolean" }
+      },
+      "required": ["id", "title", "description", "discountLabel", "applicableTo", "active"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Customer testimonial and service rating.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "authorName": { "type": "string", "maxLength": 100 },
+        "serviceUsed": { "type": "string", "maxLength": 120 },
+        "rating": { "type": "number" },
+        "comment": { "type": "string", "maxLength": 800 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "isDemo": { "type": "boolean" },
+        "published": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "authorName", "serviceUsed", "rating", "comment", "published", "createdAt"]
+    },
+    "Holiday": {
+      "title": "Holiday",
+      "description": "Nepal public holiday or business closure date.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "maxLength": 120 },
+        "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", "maxLength": 12 },
+        "bsDate": { "type": "string", "maxLength": 40 },
+        "isClosed": { "type": "boolean" },
+        "specialHours": { "type": "string", "maxLength": 60 }
+      },
+      "required": ["id", "name", "date", "isClosed"]
+    },
+    "BusinessSettings": {
+      "title": "BusinessSettings",
+      "description": "Editable Healing Touch Spa & Saloon contact, hours, policies, and demo notices.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "businessName": { "type": "string", "maxLength": 140 },
+        "tagline": { "type": "string", "maxLength": 200 },
+        "address": { "type": "string", "maxLength": 240 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "whatsappNumber": { "type": "string", "maxLength": 32 },
+        "email": { "type": "string", "maxLength": 160 },
+        "facebookUrl": { "type": "string", "maxLength": 300 },
+        "instagramUrl": { "type": "string", "maxLength": 300 },
+        "googleMapsUrl": { "type": "string", "maxLength": 300 },
+        "openingHoursText": { "type": "string", "maxLength": 160 },
+        "openTime": { "type": "string", "maxLength": 10 },
+        "closeTime": { "type": "string", "maxLength": 10 },
+        "minimumAgeSpa": { "type": "number" },
+        "agePolicyText": { "type": "string", "maxLength": 600 },
+        "hygieneStandardsText": { "type": "string", "maxLength": 800 },
+        "cancellationPolicyText": { "type": "string", "maxLength": 600 },
+        "showDemoContentBanner": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "businessName", "address", "phone", "openingHoursText", "minimumAgeSpa"]
+    },
+    "ContactMessage": {
+      "title": "ContactMessage",
+      "description": "Customer inquiry submitted via the public Contact page.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "phone": { "type": "string", "minLength": 7, "maxLength": 24 },
+        "email": { "type": "string", "maxLength": 160 },
+        "subject": { "type": "string", "maxLength": 160 },
+        "message": { "type": "string", "minLength": 5, "maxLength": 1500 },
+        "status": { "type": "string", "enum": ["new", "replied", "archived"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "phone", "message", "status", "createdAt"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Administrative action audit log.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "actorEmail": { "type": "string", "maxLength": 160 },
+        "action": { "type": "string", "maxLength": 120 },
+        "entityType": { "type": "string", "maxLength": 60 },
+        "entityId": { "type": "string", "maxLength": 128 },
+        "summary": { "type": "string", "maxLength": 400 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "actorEmail", "action", "entityType", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/admins/{uid}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Admin and role registry."
+    },
+    "/users/{uid}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profiles isolated per owner."
+    },
+    "/serviceCategories/{categoryId}": {
+      "schema": { "$ref": "#/entities/ServiceCategory" },
+      "description": "Spa and salon service categories."
+    },
+    "/spaServices/{serviceId}": {
+      "schema": { "$ref": "#/entities/SpaService" },
+      "description": "Spa services catalog."
+    },
+    "/salonServices/{serviceId}": {
+      "schema": { "$ref": "#/entities/SalonService" },
+      "description": "Unisex salon services catalog."
+    },
+    "/packages/{packageId}": {
+      "schema": { "$ref": "#/entities/WellnessPackage" },
+      "description": "Wellness and beauty packages."
+    },
+    "/staff/{staffId}": {
+      "schema": { "$ref": "#/entities/StaffMember" },
+      "description": "Therapists, salon professionals, and schedules."
+    },
+    "/spaRooms/{roomId}": {
+      "schema": { "$ref": "#/entities/SpaRoom" },
+      "description": "Spa suites, couples rooms, and salon studios."
+    },
+    "/bookings/{bookingId}": {
+      "schema": { "$ref": "#/entities/Booking" },
+      "description": "Customer appointment records with PII protection."
+    },
+    "/bookingSlots/{slotId}": {
+      "schema": { "$ref": "#/entities/BookingSlot" },
+      "description": "De-identified slot availability index."
+    },
+    "/payments/{paymentId}": {
+      "schema": { "$ref": "#/entities/PaymentRecord" },
+      "description": "Payment and verification records."
+    },
+    "/customers/{customerId}": {
+      "schema": { "$ref": "#/entities/CustomerRecord" },
+      "description": "Admin customer CRM records."
+    },
+    "/gallery/{itemId}": {
+      "schema": { "$ref": "#/entities/GalleryItem" },
+      "description": "Spa and salon media gallery."
+    },
+    "/socialPosts/{postId}": {
+      "schema": { "$ref": "#/entities/SocialPost" },
+      "description": "Admin-managed Facebook and Instagram updates."
+    },
+    "/blogPosts/{postId}": {
+      "schema": { "$ref": "#/entities/BlogPost" },
+      "description": "Wellness and beauty journal articles."
+    },
+    "/offers/{offerId}": {
+      "schema": { "$ref": "#/entities/Offer" },
+      "description": "Seasonal and Nepal festival offers."
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/Review" },
+      "description": "Customer reviews and testimonials."
+    },
+    "/holidays/{holidayId}": {
+      "schema": { "$ref": "#/entities/Holiday" },
+      "description": "Nepal and business holidays."
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/BusinessSettings" },
+      "description": "Editable business configuration and policies."
+    },
+    "/contactMessages/{messageId}": {
+      "schema": { "$ref": "#/entities/ContactMessage" },
+      "description": "Contact inquiry submissions."
+    },
+    "/auditLogs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "Administrative audit trail."
+    }
+  }
+}
